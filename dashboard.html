@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BitFidelity Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
+  <link rel="stylesheet" href="investments.css" />
+  <link rel="stylesheet" href="withdrawals.css" />
+  <link rel="icon" href="logo.png" type="image/png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+<body>
+  <div id="loadingOverlay" class="hidden">Logging out...</div>
+
+  <header class="dashboard-header">
+  <div class="header-left-group">
+    <div class="greeting" id="greetingText">Good day ☀️🌤️🌙</div>
+    <div class="atm-card" id="atmCard">
+      <div class="atm-balance-label">Balance</div>
+      <div class="atm-balance" id="userBalance"></div>
+      <button class="add-funds-text-btn" id="addFundsBtn">+ Fund Wallet</button>
+    </div>
+  </div>
+  <div class="user-controls">
+    <!-- Profile Verification Notice -->
+<div class="verify-notice">
+  <span id="verificationNotice" class="verification-status"></span>
+
+</div>
+
+<!-- Notification Bell -->
+<div class="notification-container">
+  <div class="notification-bell" id="notificationBell">
+    🔔
+    <span id="notifCount" class="notif-badge">3</span>
+  </div>
+  <div class="notif-popup hidden" id="notifPopup">
+    <div class="notif-header">Notifications</div>
+    <ul id="notifList" class="notif-list">
+      <!-- Random messages will appear here -->
+    </ul>
+  </div>
+</div>
+
+
+<!-- Avatar Selection Modal -->
+<div class="avatar-modal hidden" id="avatarModal">
+  <div class="avatar-modal-content">
+    <h3>Select Your Avatar</h3>
+    <div class="avatar-grid" id="avatarGrid"></div>
+    <button class="close-modal-btn" id="closeAvatarModal">Close</button>
+  </div>
+</div>
+
+
+
+    <div class="profile-container">
+      <img src="https://img.freepik.com/premium-vector/silver-membership-icon-default-avatar-profile-icon-membership-icon-social-media-user-image-vector-illustration_561158-4215.jpg" class="avatar" id="userAvatar" />
+      <label id="editAvatarBtn" class="edit-icon">✏️</label>
+      <input type="file" id="avatarUpload" class="hidden" />
+    </div>
+    
+    <div class="logout-icon-wrapper">
+  <div id="logoutBtn" class="logout-icon" title="Logout">
+    <svg viewBox="0 0 24 24" fill="none" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M16 17L21 12L16 7" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M21 12H9" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 4H12C13.1046 4 14 4.89543 14 6V10" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M14 14V18C14 19.1046 13.1046 20 12 20H4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <span class="tooltip-text">Logout</span>
+</div>
+
+  </div>
+</header>
+
+<div class="live-rates-bar">
+  <div class="crypto-rate btc">BTC <span class="price" id="btcPrice">$0.00</span></div>
+  <div class="crypto-rate">USDT <span class="price" id="usdtPrice">$0.00</span></div>
+  <div class="crypto-rate">LTC <span class="price" id="ltcPrice">$0.00</span></div>
+  <div class="crypto-rate">ETH <span class="price" id="ethPrice">$0.00</span></div>
+  <div class="crypto-rate">BNB <span class="price" id="bnbPrice">$0.00</span></div>
+</div>
+
+  <!-- Leaderboard Section -->
+<div class="leaderboard-container">
+    <h2 class="leaderboard-header">🏆 Our Top Investors</h2>
+    <div class="leaderboard-scroll" aria-label="Top investors leaderboard" id="leaderboardScroll">
+
+      <!-- Investor cards with verified badges -->
+<div class="investor-card top-investor" tabindex="0">
+  <div class="investor-rank">#1</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://i.pinimg.com/736x/a3/8a/c8/a38ac820e79de63946e0f227df62bcc9.jpg" alt="Investor #15 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Emsa****</div>
+  <div class="investor-amount">$521.7M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#2</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://www.shutterstock.com/image-vector/digital-painting-boy-anime-style-600nw-2302127233.jpg" alt="Investor #14 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Liau****</div>
+  <div class="investor-amount">$333.1M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#3</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://www.shutterstock.com/shutterstock/photos/2235047505/display_1500/stock-vector-young-girl-anime-style-character-vector-illustration-design-manga-anime-girl-hair-faces-cartoon-2235047505.jpg" alt="Investor #13 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Oliv******</div>
+  <div class="investor-amount">$200M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#4</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://media.craiyon.com/2025-04-07/S9QyJvP7Rya9oBiXmGXnNw.webp" alt="Investor #12 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Noav***</div>
+  <div class="investor-amount">$130M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#5</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://static.vecteezy.com/system/resources/thumbnails/036/434/388/small_2x/anime-cute-girl-face-portrait-cartoon-character-illustration-vector.jpg" alt="Investor #11 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Soph*********</div>
+  <div class="investor-amount">$92M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#6</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://pics.craiyon.com/2023-09-20/1b7546de476d41ac91510c51bb295187.webp" alt="Investor #10 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Jame***</div>
+  <div class="investor-amount">$75.5M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#7</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://media.istockphoto.com/id/1429141343/vector/knight-character.jpg?s=612x612&w=0&k=20&c=83LMVv-IePFzsyG5DfnsN6vVElcUvA1guxQAeGjTI9s=" alt="Investor #9 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Isob********</div>
+  <div class="investor-amount">$41M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#8</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://media.craiyon.com/2025-04-25/gARLI1vkQ76Avq6N7IWERw.webp" alt="Investor #8 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Bente******</div>
+  <div class="investor-amount">$22.2M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#9</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://img.freepik.com/premium-vector/anime-girl-cartoon-character-illustration-manually-created_648489-206.jpg" alt="Investor #7 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Mial*******</div>
+  <div class="investor-amount">$11.6M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#10</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://media.craiyon.com/2025-04-07/Fkt_6APEQk6mHHwfezZ9aQ.webp" alt="Investor #6 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Elis***</div>
+  <div class="investor-amount">$4.5M</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#11</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://image.tensorartassets.com/posts/images/629433500520608395/aeedd59a-bcb4-4592-bd45-5a5db697a8bf.jpg" alt="Investor #5 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Amel***</div>
+  <div class="investor-amount">$990K</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#12</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVfg2Q-Y-edpyFk1LUmv1yR6TrwXZDp0GYTg&s" alt="Investor #4 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Will********</div>
+  <div class="investor-amount">$712K</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#13</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://i.pinimg.com/736x/93/ff/68/93ff6871a46488ad8b23a298ad352f80.jpg" alt="Investor #3 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Char*****</div>
+  <div class="investor-amount">$504K</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#14</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://anidreams.com/wp-content/uploads/2024/07/indian-characters-in-anime-featured-image.webp" alt="Investor #2 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Zame******</div>
+  <div class="investor-amount">$480K</div>
+</div>
+
+<div class="investor-card" tabindex="0">
+  <div class="investor-rank">#15</div>
+  <div class="photo-wrapper">
+    <img class="investor-photo" src="https://images.stockcake.com/public/1/b/a/1bab086b-f202-4c34-9b4e-ceea6142f028_large/autumn-anime-portrait-stockcake.jpg" alt="Investor #1 photo" />
+    <span class="verified-badge">✔</span>
+  </div>
+  <div class="investor-name">Alep****</div>
+  <div class="investor-amount">$455K</div>
+</div>
+
+
+
+    </div>
+  </div>
+
+ <!-- TABS NAVIGATION -->
+<div class="dashboard-tabs">
+  <button class="tab-btn active" data-tab="investments">
+    <i class="fas fa-chart-line"></i> <span>Investments</span>
+  </button>
+  <button class="tab-btn" data-tab="deposits">
+    <i class="fas fa-wallet"></i> <span>Deposits</span>
+  </button>
+  <button class="tab-btn" data-tab="withdrawals">
+    <i class="fas fa-hand-holding-usd"></i> <span>Withdrawals</span>
+  </button>
+  <button class="tab-btn" data-tab="chat">
+    <i class="fas fa-comments"></i> <span>Live Chat</span>
+    
+</p>
+  </button>
+</div>
+
+<!-- TABS CONTENT -->
+<div class="tab-content">
+    <div id="investments" class="tab-pane active">
+      <section id="investmentsPane" class="p-4">
+        <div id="investmentCards" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+        <div id="noInvestments" class="hidden text-center py-12">
+          <h2 class="text-xl font-semibold text-gray-600 mb-4">You have no active investments</h2>
+          <button id="startInvestingBtn" class="start-investment-btn">
+  <span class="rocket">🚀</span> Start Your Investment
+</button>
+
+        </div>
+      </section>
+    </div>
+  <div id="deposits" class="tab-pane"> 
+  <div class="deposit-tabs">
+    <div id="noDeposits" class="hidden text-center py-12">
+          <h2 class="text-xl font-semibold text-gray-600 mb-4">You have made no deposits</h2>
+          <button id="fundwalletBtn" class="fund-wallet-btn">
+  <span class="rocket"></span> Fund Your Wallet
+</button>
+
+        </div>
+    <button class="tab active" data-tab="pending">⏳ Pending</button>
+    <button class="tab" data-tab="approved">✅ Approved</button>
+    <button class="tab" data-tab="declined">❌ Declined</button>
+  </div>
+
+  <!-- Deposit panes -->
+  <div class="deposit-content">
+    <div id="pendingPane" class="deposit-pane active"></div>
+    <div id="approvedPane" class="deposit-pane"></div>
+    <div id="declinedPane" class="deposit-pane"></div>
+  </div>
+ </div>
+  <div id="withdrawals" class="tab-pane">
+  <section class="p-4">
+    <div id="withdrawalsList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+  </section>
+</div>
+
+  <div id="chat" class="tab-pane"> 
+</div>
+</div>
+
+<audio id="chatSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+<!-- Investment Popup Modal -->
+<div id="investmentPopup" class="investment-popup hidden">
+  <div class="investment-popup-box">
+    <h2 class="popup-title">Start An Investment</h2>
+    <p class="wallet-label">Wallet Balance: <strong id="walletUsdPopup">$0.00</strong></p>
+    <input type="number" id="investAmount" class="popup-input" min="100" value="100" placeholder="Amount in USD (min $100)" />
+    <div id="selectedPlanName" class="font-semibold text-base text-blue-600 mt-2"></div>
+    <div id="planReturnRate" class="text-gray-600"></div>
+    <div id="planInfo" class="hidden text-sm mt-2 transition-opacity duration-300"></div>
+    <p class="btc-conversion">≈ <span id="btcPreview">0 BTC</span></p>
+
+    <label for="planDuration" class="wallet-label">Select Plan Duration</label>
+<select id="planDuration" class="popup-input" required>
+  <option value="">-- Select Duration --</option>
+  <option value="1w">1 Week</option>
+  <option value="1m">1 Month</option>
+  <option value="3m">3 Months</option>
+  <option value="6m">6 Months</option>
+  <option value="12m">1 Year</option>
+</select>
+<div id="durationError" class="insufficient-error hidden">⚠️ Please select a plan duration</div>
+
+
+    <div class="popup-actions">
+      <button id="cancelInvestBtn" class="popup-btn cancel">Cancel</button>
+      <button id="confirmInvestBtn" class="popup-btn confirm">Confirm</button>
+    </div>
+    <!-- Fixed Amount Buttons -->
+<div id="fixedAmounts" class="fixed-amounts-grid">
+  <button class="amount-btn" data-value="100">$100</button>
+  <button class="amount-btn" data-value="500">$500</button>
+  <button class="amount-btn" data-value="1000">$1,000</button>
+  <button class="amount-btn" data-value="3000">$3,000</button>
+  <button class="amount-btn" data-value="5000">$5,000</button>
+  <button class="amount-btn" data-value="10000">$10,000</button>
+  <button class="amount-btn" data-value="20000">$20,000</button>
+  <button class="amount-btn" data-value="50000">$50,000</button>
+  <button class="amount-btn" data-value="100000">$100,000</button>
+  <button class="amount-btn" data-value="300000">$300,000</button>
+  <button class="amount-btn" data-value="500000">$500,000</button>
+  <button class="amount-btn" data-value="1000000">$1,000,000</button>
+</div>
+
+<!-- Loading Bar -->
+<div id="investLoadingBar" class="loading-bar hidden"></div>
+
+<!-- Toast Message -->
+<div id="investToast" class="invest-toast hidden">🎉 Investment Successful!</div>
+<div id="errorToast" class="invest-toast hidden"></div>
+
+
+<!-- Audio -->
+<audio id="successSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3f493f8b35.mp3" preload="auto"></audio>
+
+<div id="confettiBurst" style="position:fixed;pointer-events:none;top:50%;left:50%;transform:translate(-50%, -50%);font-size:50px;display:none;z-index:9999;">🎊🎉✨</div>
+
+  </div>
+  
+</div>
+<div id="liveTradePopup" role="dialog" aria-modal="true" aria-labelledby="liveTradeTitle" aria-describedby="liveTradeDesc" class="hidden">
+  <h3 id="liveTradeTitle">Live in Trade</h3>
+  <p id="liveTradeDesc">
+    Our AI has started trading with your investment actively. The profits and trade status are updated in real-time to maximize your returns.
+  </p>
+  <button class="close-btn" aria-label="Close Live in Trade info">Close</button>
+</div>
+
+<button class="start-investment-btn hidden" id="newInvestmentBtn">
+  <span class="rocket">🚀</span> New Investment
+</button>
+
+
+
+  <script type="module" src="dashboard.js"></script>
+  <script type="module" src="investments.js"></script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+

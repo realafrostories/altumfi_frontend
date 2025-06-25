@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BitFidelity - Trusted Bitcoin Investments</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="icon" href="logo.png" type="image/png">
+  <audio id="txSound" src="https://freesound.org/data/previews/397/397730_5121236-lq.mp3" preload="auto"></audio>
+
+</head>
+
+<!-- Deposit Modal -->
+<div id="depositModal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <h3>Confirm Investment</h3>
+    <p id="selectedPlanTitle">Plan: </p>
+    
+    <form onsubmit="submitInvestment(event)">
+      <label for="amount">Enter Amount ($):</label>
+      <input type="number" id="amount" required min="10" placeholder="E.g. 100" />
+      <button type="submit">Confirm Deposit</button>
+    </form>
+  </div>
+</div>
+
+<body>
+  <header>
+    <nav id="hero">
+      <div class="logo"><img src="logo.png" alt="BitFidelity" class="head-logo"></div>
+      <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="#">Plans</a></li>
+        <li><a href="#">Login</a></li>
+        <li><a href="#">Register</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section  class="hero">
+  <div class="hero-overlay"></div> <!-- fade effect -->
+  <div class="hero-content">
+    <h1>Grow Your Wealth with BitFidelity</h1>
+    <p>Trusted Bitcoin investments with fast returns and unmatched transparency.</p>
+    <button onclick="window.location.href = 'signup.html';">Join BitFidelity Now</button>
+  </div>
+</section>
+
+<div id="newsTicker">
+  <marquee behavior="scroll" direction="left" scrollamount="4" id="newsContent">
+    ⏳ Loading Bitcoin news...
+  </marquee>
+</div>
+<div class="wallet-growth-widget" id="walletGrowthWidget">
+  <div class="wallet-growth-icon">💰</div>
+  <div class="wallet-growth-content">
+    <div class="wallet-label">Trade Profit (pYr)</div>
+    <div id="btcCounter" class="btc-value">₿ 0.00000000</div>
+  </div>
+</div>
+
+
+
+<section id="testimonials-alt">
+  <h2 class="section-title">💬 What Investors Are Saying</h2>
+  <div class="testimonials-grid" id="testimonialsGrid"></div>
+</section>
+
+
+
+
+
+<section id="strategy" class="strategy-section">
+  <div class="container">
+    <h2>📈 How We Grow Your Investment</h2>
+    <p class="strategy-subtitle">A secure, smart, and structured approach designed to maximize your returns while protecting your capital.</p>
+
+    <div class="strategy-steps">
+      <div class="step">
+        <div class="icon">🔍</div>
+        <h3>1. Market Intelligence</h3>
+        <p>AI-powered analysis of over 100+ crypto assets, trends, and news to pinpoint the most lucrative and safe investment opportunities.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">📂</div>
+        <h3>2. Strategic Diversification</h3>
+        <p>Your investment is diversified across major coins, DeFi, stable assets, and futures to minimize risk and optimize returns.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">🤖</div>
+        <h3>3. Automated Trading Engine</h3>
+        <p>BitFidelity's proprietary bots trade 24/7, capturing high-frequency arbitrage and swing-trade opportunities across exchanges.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">📊</div>
+        <h3>4. Real-Time Portfolio Optimization</h3>
+        <p>Our system rebalances your portfolio based on real-time market shifts, reducing drawdowns and locking in profits intelligently.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">🔐</div>
+        <h3>5. Institutional-Grade Security</h3>
+        <p>Multi-sig cold storage, 2FA, and AI fraud detection protect your funds at all times — 100% verifiable security infrastructure.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">💸</div>
+        <h3>6. Weekly Payout System</h3>
+        <p>Your earned profits are calculated and sent weekly to your wallet. All transactions are transparent and blockchain-verifiable.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">🌍</div>
+        <h3>7. Global Scalability</h3>
+        <p>Whether you're investing $50 or $50,000 — our system scales globally using cloud infrastructure and smart contract protocols.</p>
+      </div>
+
+      <div class="step">
+        <div class="icon">📈</div>
+        <h3>8. Transparent Growth Tracking</h3>
+        <p>Your dashboard shows live earnings, asset allocations, and past performance — providing full transparency at every stage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  
+
+
+  <section class="live-price">
+    <h2>Live Bitcoin Price</h2>
+    <div id="btc-price">$--</div>
+  </section>
+
+  <section class="investment-plans">
+  <h2>Choose an Investment Plan</h2>
+  <div class="plans-container">
+    <div class="plan-card">
+      <h3>Starter Plan</h3>
+      <p>💵 Min: $10 - Max: $99</p>
+      <p>🔁 5% daily for 7 days</p>
+      <button onclick="openModal('Starter Plan')">Select Plan</button>
+    </div>
+    <div class="plan-card popular">
+      <h3>Pro Plan</h3>
+      <p>💵 Min: $100 - Max: $499</p>
+      <p>🔁 7% daily for 10 days</p>
+      <button onclick="openModal('Pro Plan')">Select Plan</button>
+    </div>
+    <div class="plan-card">
+      <h3>Elite Plan</h3>
+      <p>💵 Min: $500 - $2000+</p>
+      <p>🔁 10% daily for 15 days</p>
+      <button onclick="openModal('Elite Plan')">Select Plan</button>
+    </div>
+  </div>
+
+  <div id="transactionAlerts" class="alerts-container"></div>
+
+  <section class="security-section">
+  <h2 class="section-title">🔒 Our Commitment to Security & Transparency</h2>
+  <div class="security-grid">
+    <div class="security-card">
+      <img src="https://img.icons8.com/fluency/48/lock.png" alt="SSL Lock" />
+      <h3>SSL Encryption</h3>
+      <p>All data and transactions are protected by 256-bit SSL encryption for ultimate security.</p>
+    </div>
+    <div class="security-card">
+      <img src="https://img.icons8.com/fluency/48/contract.png" alt="Smart Contracts" />
+      <h3>Audited Smart Contracts</h3>
+      <p>Our smart investment logic is transparently logged and regularly audited.</p>
+    </div>
+    <div class="security-card">
+      <img src="https://img.icons8.com/fluency/48/blockchain.png" alt="Wallet" />
+      <h3>Wallet Transparency</h3>
+      <p>Track every transaction live. Our wallets are visible and verifiable.</p>
+    </div>
+    <div class="security-card">
+      <img src="https://img.icons8.com/fluency/48/security-checked.png" alt="Monitoring" />
+      <h3>24/7 Security Monitoring</h3>
+      <p>Round-the-clock systems monitor and protect against threats and breaches.</p>
+    </div>
+  </div>
+</section>
+
+</section>
+
+
+  <footer>
+    <section class="elite-team">
+  <h2>🌐 Meet the Experts Behind BitFidelity</h2>
+  <p class="intro">World-class professionals with proven expertise in blockchain, finance, risk management, and global compliance.</p>
+
+  <div class="team-grid">
+
+    <!-- Member 1 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/men/75.jpg" alt="CEO">
+      <h4><a href="https://www.google.com/search?q=Ethan+Rothschild+BitFidelity" target="_blank">Ethan Rothschild</a></h4>
+      <p class="title">Founder & CEO</p>
+      <p class="bio">A blockchain visionary with over 15 years in investment banking and fintech innovation.</p>
+    </div>
+
+    <!-- Member 2 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="CFO">
+      <h4><a href="https://www.google.com/search?q=Vanessa+Gupta+BitFidelity" target="_blank">Vanessa Gupta</a></h4>
+      <p class="title">Chief Financial Officer</p>
+      <p class="bio">Ex-Goldman Sachs executive overseeing our financial operations and ROI systems.</p>
+    </div>
+
+    <!-- Member 3 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="CIO">
+      <h4><a href="https://www.google.com/search?q=Lucas+Okoro+BitFidelity" target="_blank">Lucaz Jnr.</a></h4>
+      <p class="title">Chief Investment Officer</p>
+      <p class="bio">Multi-million dollar crypto portfolio manager, formerly at Paxful Nigeria.</p>
+    </div>
+
+    <!-- Member 4 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/women/80.jpg" alt="Lead Blockchain Architect">
+      <h4><a href="https://www.google.com/search?q=Elena+Tanaka+BitFidelity" target="_blank">Elena Tanaka</a></h4>
+      <p class="title">Lead Blockchain Architect</p>
+      <p class="bio">Ethereum contributor & smart contract expert leading BitFidelity’s core protocols.</p>
+    </div>
+
+    <!-- Member 5 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/men/60.jpg" alt="Risk Head">
+      <h4><a href="https://www.google.com/search?q=Jean+Mbaye+BitFidelity" target="_blank">Jean Mbaye</a></h4>
+      <p class="title">Head of Risk & Compliance</p>
+      <p class="bio">Monitors KYC/AML policies and market risks across global regions.</p>
+    </div>
+
+    <!-- Member 6 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/women/35.jpg" alt="Marketing Director">
+      <h4><a href="https://www.google.com/search?q=Clara+Rodriguez+BitFidelity" target="_blank">Clara Rodriguez</a></h4>
+      <p class="title">Director of Strategy & Growth</p>
+      <p class="bio">Leads global brand growth & user acquisition with Web3 campaigns.</p>
+    </div>
+
+    <!-- Member 7 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/men/40.jpg" alt="Tech Head">
+      <h4><a href="https://www.google.com/search?q=Daniel+Kim+BitFidelity" target="_blank">Daniel Kim</a></h4>
+      <p class="title">Head of Engineering</p>
+      <p class="bio">Previously at Coinbase. Ensures platform scalability and security.</p>
+    </div>
+
+    <!-- Member 8 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/women/45.jpg" alt="Legal Counsel">
+      <h4><a href="https://www.google.com/search?q=Sara+Blake+BitFidelity" target="_blank">Sara Blake</a></h4>
+      <p class="title">General Counsel</p>
+      <p class="bio">Top-tier legal advisor with experience in SEC, blockchain law, and global licensing.</p>
+    </div>
+
+    <!-- Member 9 -->
+    <div class="team-card">
+      <img src="https://randomuser.me/api/portraits/men/30.jpg" alt="Community Lead">
+      <h4><a href="https://www.google.com/search?q=Musa+Adebayo+BitFidelity" target="_blank">Musa Adebayo</a></h4>
+      <p class="title">Community & Education Lead</p>
+      <p class="bio">Handles global outreach, user trust-building, and crypto education workshops.</p>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+    © 2025 BitFidelity. All rights reserved.
+  </footer>
+
+  <!-- Floating ROI Widget -->
+<div class="roi-widget">
+  <button id="roiToggle">💹</button>
+  <div class="roi-popup" id="roiPopup">
+    <h3>📊 ROI Calculator</h3>
+    <div class="roi-form">
+      <input type="number" id="amountInput" placeholder="Amount (USD)" min="10">
+      <select id="planSelect">
+        <option value="7">7 Days - 6%</option>
+        <option value="30">30 Days - 28%</option>
+        <option value="90">90 Days - 90%</option>
+      </select>
+      <button onclick="calculateROI()">Calculate</button>
+    </div>
+    <div id="roiResult" class="roi-result"></div>
+  </div>
+</div>
+
+<!-- Floating Chatbot Button and Panel -->
+<div class="chatbot-button" onclick="toggleChatbot()">💬</div>
+
+<div class="chatbot-panel" id="chatbotPanel">
+  <div class="chatbot-header">
+    <span>🤖 BitFidelity Assistant</span>
+    <button onclick="toggleChatbot()">✖</button>
+  </div>
+  <div class="chatbot-messages" id="chatMessages">
+    <div class="bot-msg">
+      <img class="avatar bot-avatar" src="https://cdn-icons-png.flaticon.com/512/4712/4712037.png" alt="Bot">
+      <div class="msg-text">Hi there! 👋 I'm here to assist you.</div>
+    </div>
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="chatInput" placeholder="Ask something..." onkeydown="if(event.key==='Enter') sendChatMessage()" />
+    <button onclick="sendChatMessage()">➤</button>
+  </div>
+</div>
+
+  <!-- Floating Trust Badge -->
+<div id="trust-badge">
+  <img src="https://img.icons8.com/fluency/48/security-checked.png" alt="Trust" />
+  <div class="trust-popup">
+    <h4>🔒 BitFidelity is Secure</h4>
+    <p>• SSL Encrypted<br>
+       • Smart Contract Verified<br>
+       • 24/7 Monitoring<br>
+       • Wallet Transparency<br>
+       • Audited Systems</p>
+    <button onclick="alert('View full report coming soon')">View Audit</button>
+  </div>
+</div>
+
+<footer class="newsletter-footer">
+  <div class="newsletter-box">
+    <h3>📬 Join Our Newsletter</h3>
+    <p>Get the latest investment tips, updates, and opportunities straight to your inbox.</p>
+    <form id="newsletterForm">
+      <input type="email" placeholder="Enter your email" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p class="privacy-note">We respect your privacy. No spam.</p>
+  </div>
+</footer>
+
+  
+  
+<script src="script.js"></script>
+
+<script>
+  ScrollReveal().reveal('.step', {
+    origin: 'bottom',
+    distance: '40px',
+    duration: 800,
+    easing: 'ease-out',
+    interval: 150,
+    reset: false,
+    scale: 0.95,
+    opacity: 0
+  });
+</script>
+
+
+<script>
+  const counters = document.querySelectorAll('.step-number');
+
+  const animateCount = (el, target) => {
+    let current = 0;
+    const speed = 50;
+    const update = () => {
+      const increment = Math.ceil(target / 20);
+      current += increment;
+      if (current < target) {
+        el.innerText = current.toString().padStart(2, '0');
+        requestAnimationFrame(update);
+      } else {
+        el.innerText = target.toString().padStart(2, '0');
+      }
+    };
+    update();
+  };
+
+  ScrollReveal().reveal('.step', {
+    origin: 'bottom',
+    distance: '40px',
+    duration: 800,
+    easing: 'ease-out',
+    interval: 150,
+    reset: false,
+    scale: 0.95,
+    opacity: 0,
+    beforeReveal: function (el) {
+      const counter = el.querySelector('.step-number');
+      const target = parseInt(counter.getAttribute('data-number'));
+      if (counter && !counter.dataset.animated) {
+        animateCount(counter, target);
+        counter.dataset.animated = 'true';
+      }
+    }
+  });
+</script>
+
+  
+</body>
+</html>
+

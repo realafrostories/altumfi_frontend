@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Approve Deposits</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <h2>Admin - Approve Deposits</h2>
+<div class="tabs">
+  <button id="tabPending" class="tab active">⏳ Pending</button>
+  <button id="tabApproved" class="tab">✅ Approved</button>
+  <button id="tabDisapproved" class="tab">⛔ Disapproved</button>
+</div>
+
+<section id="pendingSection" class="deposits-section active">
+  <h2>Pending Deposits</h2>
+  <div id="pendingList"></div>
+</section>
+
+<section id="approvedSection" class="deposits-section">
+  <h2>Approved Deposits</h2>
+  <div id="approvedList"></div>
+</section>
+
+<section id="disapprovedSection" class="deposits-section">
+  <h2>Disapproved Deposits</h2>
+  <div id="disapprovedList"></div>
+</section>
+
+
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,131 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f3f3;
+  padding: 20px;
+}
+
+.admin-container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+.deposit-item {
+  border-bottom: 1px solid #eee;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.deposit-item:last-child {
+  border-bottom: none;
+}
+
+button.approve-btn {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.tab {
+  padding: 8px 16px;
+  background: #eee;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.tab.active {
+  background: #4CAF50;
+  color: white;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+.deposit-item {
+  background: #f9f9f9;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-left: 4px solid #2196f3;
+  border-radius: 5px;
+}
+.approve-btn {
+  margin-top: 10px;
+  background: #28a745;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.deposits-section {
+  display: none;
+}
+
+.deposits-section.active {
+  display: block;
+}
+.disapprove-btn {
+  background-color: #e74c3c; /* Red */
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.disapprove-btn:hover {
+  background-color: #c0392b;
+}
+.deposits-section {
+  display: none;
+}
+.deposits-section.active {
+  display: block;
+}
+
+.approve-btn {
+  background-color: #2ecc71; /* green */
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.approve-btn:hover {
+  background-color: #27ae60;
+}
+
+/* Optional: disapprove button styles could be moved here instead of inline */
+.disapprove-btn {
+  background-color: #e74c3c; /* red */
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-left: 10px;
+}
+.disapprove-btn:hover {
+  background-color: #c0392b;
+}
