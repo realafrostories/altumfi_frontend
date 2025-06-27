@@ -233,6 +233,28 @@ async function saveStepData(index) {
 // Auth Watcher
 onAuthStateChanged(auth, async (user) => {
   if (!user) return (window.location.href = "signin.html");
+
+  try {
+      const userDoc = await getDoc(doc(db, "Users", user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+  
+        if (userData.blocked === true) {
+          const overlay = document.getElementById("blockedOverlay");
+          overlay.classList.remove("hidden");
+  
+          const supportBtn = document.getElementById("contactSupportBtn");
+          supportBtn.addEventListener("click", () => {
+            window.location.href = "support.html";
+          });
+  
+          // Prevent scroll & interaction
+          document.body.style.overflow = "hidden";
+        }
+      }
+    } catch (err) {
+      console.error("❌ Failed to check block status:", err);
+    }
   currentUser = user;
   userRef = doc(db, "Users", user.uid);
 

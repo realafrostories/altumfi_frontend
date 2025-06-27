@@ -7,12 +7,17 @@
   <link rel="stylesheet" href="dashboard.css" />
   <link rel="stylesheet" href="investments.css" />
   <link rel="stylesheet" href="withdrawals.css" />
+  <link rel="stylesheet" href="chatroom.css" />
   <link rel="icon" href="logo.png" type="image/png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 </head>
 <body>
+
+
+
+  <div id="toastContainer" class="toast-container"></div>
   <div id="loadingOverlay" class="hidden">Logging out...</div>
 
   <header class="dashboard-header">
@@ -35,15 +40,18 @@
 <div class="notification-container">
   <div class="notification-bell" id="notificationBell">
     🔔
-    <span id="notifCount" class="notif-badge">3</span>
+    <span id="notifCount" class="notif-badge hidden"></span>
+    <div id="notifSideAlert" class="notif-alert hidden">New Notification</div>
   </div>
+
   <div class="notif-popup hidden" id="notifPopup">
     <div class="notif-header">Notifications</div>
     <ul id="notifList" class="notif-list">
-      <!-- Random messages will appear here -->
+      <!-- Fetched notifications go here -->
     </ul>
   </div>
 </div>
+
 
 
 <!-- Avatar Selection Modal -->
@@ -277,8 +285,7 @@
 </button>
 
         </div>
-      </section>
-    </div>
+      </section></div>
   <div id="deposits" class="tab-pane"> 
   <div class="deposit-tabs">
     <div id="noDeposits" class="hidden text-center py-12">
@@ -300,15 +307,109 @@
     <div id="declinedPane" class="deposit-pane"></div>
   </div>
  </div>
-  <div id="withdrawals" class="tab-pane">
-  <section class="p-4">
-    <div id="withdrawalsList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
-  </section>
+  <!-- Withdraw Tab Container -->
+<div id="withdrawals" class="tab-pane p-4">
+  <div class="text-center mb-6">
+<div id="withdrawTriggerContainer" class="flex justify-end">
+  <button id="openWithdrawPopup" class="withdraw-btn">Withdraw Funds</button>
+</div>
+<!-- Withdraw Popup -->
+<div id="withdrawPopup" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="withdraw-card bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative animate-popup">
+    <button id="closeWithdrawPopup" class="close-btn absolute top-2 right-2 text-gray-400 hover:text-red-500 transition">✖</button>
+
+    <h2 class="text-xl font-bold text-blue-600 mb-2">Withdraw Funds</h2>
+    <p class="text-sm text-green-600 font-medium mb-4" >Wallet Balance: <span id="userBalanceText">$0.00</span></p>
+
+    <form id="withdrawForm" class="space-y-4">
+
+      <div class="flex items-center justify-end mb-3 gap-2 text-sm font-medium text-gray-700">
+  <div class="toggle-mode-switch mb-4">
+  <span class="toggle-label">Input in:</span>
+  <div class="toggle-group" id="toggleModeGroup">
+    <input type="radio" id="modeUSD" name="inputMode" value="usd" checked />
+    <label for="modeUSD">USD</label>
+
+    <input type="radio" id="modeBTC" name="inputMode" value="btc" />
+    <label for="modeBTC">BTC</label>
+  </div>
+</div>
+</div>
+      <div id="usdWrapper">
+        <label class="block text-sm font-medium text-gray-700" id="pTxt">Amount (USD)</label>
+        <input type="number" id="withdrawAmountUSD" class="w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500" min="10">
+      <p class="min-note text-xs text-red-500 font-medium"></p>
+      </div>
+
+      <div id="btcWrapper">
+        <label class="block text-sm font-medium text-gray-700" id="pTxt">Amount (BTC)</label>
+        <input type="number" id="withdrawAmountBTC" class="w-full px-4 py-2 rounded border focus:outline-none focus:ring-2 focus:ring-blue-500" novalidate
+        step="0.00000001"    min="0">
+      <p class="min-note text-xs text-red-500 font-medium"></p>
+      </div>
+
+      <p class="text-xs text-gray-500 italic" id="wtext"><b>Note: </b>We charge a 15% fee per withdraw, which includes tax & dynamic network fees. Withdrawals within the proper 5 business/working days takes up to 24hours to reflect, otherwise expect extra delay</p>
+
+      <div class="wallet-input-wrapper">
+  <label for="withdrawWallet" class="wallet-label">BTC Wallet Address</label>
+  <div class="wallet-input-container">
+    <input
+      type="text"
+      id="withdrawWallet"
+      class="wallet-input"
+      required
+    />
+    <button id="pasteWalletBtn" class="paste-btn" title="Paste">📋</button></div></div>
+
+      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">Submit Withdrawal</button>
+    </form>
+  </div>
 </div>
 
-  <div id="chat" class="tab-pane"> 
+
+  <!-- Withdrawals List -->
+<div id="withdrawalsList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-6"></div>
+
 </div>
 </div>
+
+
+  <div id="chat" class="tab-pane">
+  <div class="chat-options-container">
+    <!-- Community Chat Card -->
+    <div class="chat-card pulse-card">
+      <div class="icon">👥</div>
+      <h3>Online Community</h3>
+      <p>Join our open community room and connect with other users in real time.</p>
+      <button id="enterChatRoomBtn" class="chat-room-btn">💬 Enter Chat Room</button>
+    </div>
+
+    <!-- Live Support Card -->
+    <div class="chat-card pulse-card">
+      <div class="icon">🎧</div>
+      <h3>Live Support</h3>
+      <p>Chat with our support team if you need help with your account or transactions.</p>
+      <button id="chatSupportBtn">Chat with Support</button>
+
+  </div>
+
+  <div class="chat-card pulse-card">
+      <div class="icon"><img src="https://cdn-icons-png.flaticon.com/512/4264/4264838.png" height="60px" width="60px"/></div>
+      <h3>Try Your Luck</h3>
+      <p>You could get lucky with our Top-Investors.</p>
+      <button id="luckBtn" class="lckbtn">Coming Soon</button>
+
+  </div>
+</div>
+
+
+
+</div>
+
+
+
+
+
 
 <audio id="chatSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
 
@@ -383,9 +484,88 @@
   <span class="rocket">🚀</span> New Investment
 </button>
 
+<div id="toastContainer" class="fixed top-6 right-6 z-[1000] space-y-3 max-w-sm w-full"></div>
 
+
+<!-- Blocked Overlay -->
+<div id="blockedOverlay" class="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-md z-[9999] flex items-center justify-center hidden">
+  <div class="bg-white p-8 rounded-xl shadow-xl max-w-md w-full text-center animate-fade-in">
+    <h2 class="text-2xl font-bold text-red-600 mb-4">🚫 Account Blocked</h2>
+    <p class="text-gray-700 mb-6">
+      We noticed unusual activities on your account and your account has been <strong>temporarily Suspended</strong>.
+      <br><br>
+      Please contact live support to rectify the issue.
+    </p>
+    <button id="openSupportBtn" class="px-6 py-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded-full font-semibold text-sm shadow-md animate-pulse hover:scale-105 transition">
+      💬 Contact Support
+    </button>
+  </div>
+</div>
+
+<!-- 💬 Support Chat Modal -->
+<div id="supportModal" class="support-modal">
+  <div class="support-header">
+    <div class="agent-info">
+      <img src="https://www.shutterstock.com/image-vector/support-icon-can-be-used-600nw-1887496465.jpg" class="agent-avatar" />
+      <span class="agent-name">Support Agent</span>
+      <span class="online-dot"></span>
+    </div>
+    <button id="closeSupportModal">✖</button>
+  </div>
+
+  <div id="chatMessages" class="chat-body"></div>
+
+  <form id="chatForm" class="chat-input-bar">
+    <input type="text" id="chatInput" placeholder="Type your message..." autocomplete="off" />
+    <button type="submit">Send</button>
+  </form>
+</div>
+
+
+<!-- Overlay with blur effect -->
+<div id="chatRoomModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="chat-header">
+      
+      <h3>BF Chat Room</h3>
+      <div class="online-status">
+  <span id="onlineCount">📡 0 users online</span>
+</div>
+      <button id="closeChatRoom">&times;</button>
+    </div>
+    <div id="chatBody" class="chat-body"></div>
+    <form id="userInputForm" class="chat-input-form">
+      <input id="userMessage" autocomplete="off" placeholder="Type your message..." />
+      <div class="emoji-dropdown">
+  <button type="button" id="emojiToggle">😊</button>
+  
+</div>
+
+      <button type="submit">Send</button>
+    </form>
+  </div>
+  <button id="scrollToBottomBtn" style="display:none; position:absolute; bottom: 60px; right: 20px; z-index:1000;">
+  ↓ Scroll to bottom
+</button>
+<div class="emoji-picker" id="emojiPicker">
+    <div class="emoji-tabs">
+      <button data-tab="smileys">😄</button>
+      <button data-tab="symbols">💡</button>
+      <button data-tab="food">🍔</button>
+      <button data-tab="travel">✈️</button>
+      <button data-tab="flags">🏳️</button>
+    </div>
+    <div class="emoji-content" id="emojiContent"></div>
+  </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.min.js"></script>
 
   <script type="module" src="dashboard.js"></script>
+  <script type="module" src="support.js"></script>
+  <script type="module" src="chatroom.js"></script>
   <script type="module" src="investments.js"></script>
 </body>
 </html>

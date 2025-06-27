@@ -100,6 +100,7 @@ const cryptoInfo = {
 // Auth state
 onAuthStateChanged(auth, user => {
   if (!user) return window.location.href = "signin.html";
+  
   currentUserId = user.uid;
 });
 
@@ -116,7 +117,7 @@ cryptoButtons.forEach(button => {
       return;
     }
 
-    const usdAmount = parseFloat(amountInput.value);
+    const usdAmount = `${parseFloat(amountInput.value)}`;
     if (isNaN(usdAmount) || usdAmount < 100) {
       alert("Minimum deposit is $100.");
       return;
@@ -205,28 +206,34 @@ function listenForConfirmation() {
     const status = snapshot.data().status;
 
     if (status === "true") {
-      // Deposit approved
-      popup.classList.add("hidden");
-      minimized.classList.add("hidden");
-      successPopup.classList.remove("hidden");
-      successAmountEl.textContent = `🎉 You successfully deposited $${currentDepositAmount.toFixed(2)}!`;
+  popup.classList.add("hidden");
+  minimized.classList.add("hidden");
+  successPopup.classList.remove("hidden");
 
-      const walletRef = doc(db, "Wallet", currentUserId);
-      const walletSnap = await getDoc(walletRef);
-      const prevAmount = walletSnap.exists() && walletSnap.data().usd ? parseFloat(walletSnap.data().usd) : 0;
-      const updatedAmount = prevAmount + currentDepositAmount;
+  successAmountEl.textContent = `🎉 You successfully deposited $${parseFloat(currentDepositAmount).toFixed(2)}!`;
 
-      if (walletSnap.exists()) {
-        await updateDoc(walletRef, { usd: updatedAmount });
-      } else {
-        await setDoc(walletRef, { usd: updatedAmount });
-      }
-    } else if (status === "false") {
-      // Deposit disapproved
-      popup.classList.add("hidden");
-      minimized.classList.add("hidden");
-      failedPopup.classList.remove("hidden");
+  const walletRef = doc(db, "Wallet", currentUserId);
+
+  try {
+    const walletSnap = await getDoc(walletRef);
+    const prevAmount = walletSnap.exists() && walletSnap.data().usd
+      ? parseFloat(walletSnap.data().usd)
+      : 0;
+
+    const updatedAmount = prevAmount + parseFloat(currentDepositAmount);
+
+    if (walletSnap.exists()) {
+      await updateDoc(walletRef, { usd: updatedAmount });
+    } else {
+      await setDoc(walletRef, { usd: updatedAmount });
     }
+
+    console.log("✅ Wallet updated:", updatedAmount);
+  } catch (e) {
+    console.error("❌ Wallet update error:", e);
+  }
+}
+
     // else status is pending or something else — keep popup open
   });
 }
@@ -264,3 +271,33 @@ tryAgainBtn.addEventListener("click", () => {
 
 // --- Added toggle logic for GiftCard image/code input --- //
 
+window.addEventListener("DOMContentLoaded", () => {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return (window.location.href = "signin.html");
+
+     try {
+    const userDoc = await getDoc(doc(db, "Users", user.uid));
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+
+      if (userData.blocked === true) {
+        const overlay = document.getElementById("blockedOverlay");
+        overlay.classList.remove("hidden");
+
+        const supportBtn = document.getElementById("contactSupportBtn");
+        supportBtn.addEventListener("click", () => {
+          window.location.href = "support.html";
+        });
+
+        // Prevent scroll & interaction
+        document.body.style.overflow = "hidden";
+      }
+    }
+  } catch (err) {
+    console.error("❌ Failed to check block status:", err);
+  }
+  
+  });
+
+  
+});
