@@ -17,6 +17,183 @@ const liveEarningsState = new Map();
 
 let currentBtcRate = 0;
 
+const scrollContainer = document.getElementById("leaderboardScroll");
+scrollContainer.innerHTML += scrollContainer.innerHTML;
+
+function loopScroll() {
+  scrollContainer.scrollLeft += 1;
+  if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth / 2) {
+    scrollContainer.scrollLeft = 0;
+  }
+  requestAnimationFrame(loopScroll);
+
+
+}
+loopScroll();
+
+
+
+
+
+// Elements
+document.addEventListener("DOMContentLoaded", () => {
+  const avatarImg = document.getElementById("userAvatar");
+  const editBtn = document.getElementById("openUserAvatarModalBtn");
+  const modal = document.getElementById("userAvatarModal");
+  const avatarGrid = document.getElementById("userAvatarGrid");
+
+  // ✅ Replace dynamic fetch with fast, static URLs
+  const avatarURLs = Array.from({ length: 56 }, (_, i) =>
+  `https://api.dicebear.com/7.x/avataaars/svg?seed=Anime${i + 1}`
+);
+
+  editBtn.addEventListener("click", () => {
+  modal.style.display = "flex";
+  modal.classList.remove("hide");
+  modal.classList.add("show");
+  document.body.style.overflow = 'hidden'; // Disable scroll
+  populateAnimeAvatars();
+});
+
+
+  let selectedAvatarURL = null;
+
+function populateAnimeAvatars() {
+  avatarGrid.innerHTML = "";
+  selectedAvatarURL = null;
+  document.getElementById("saveAvatarSection").style.display = "none";
+
+  avatarURLs.forEach(url => {
+    const img = document.createElement("img");
+    img.src = url;
+    img.className = "user-avatar-choice";
+
+    img.addEventListener("click", () => {
+      // Remove previous selection
+      document.querySelectorAll(".user-avatar-choice").forEach(img => img.classList.remove("selected"));
+      // Mark selected
+      img.classList.add("selected");
+      selectedAvatarURL = url;
+
+      // Show Save Button
+      document.getElementById("saveAvatarSection").style.display = "block";
+      document.getElementById("avatarSavingSpinner").style.display = "none";
+    });
+
+    avatarGrid.appendChild(img);
+  });
+}
+
+document.getElementById("confirmAvatarBtn").addEventListener("click", async () => {
+  if (!selectedAvatarURL) return;
+
+  const spinner  = document.getElementById("avatarSavingSpinner");
+  const success  = document.getElementById("avatarSaveSuccess");
+
+  spinner.style.display  = "flex";
+  success.style.display  = "none";
+
+  try {
+    const user = auth.currentUser;
+    if (!user) return alert("Not signed in");
+
+    const userRef = doc(db, "Users", user.uid);
+    await updateDoc(userRef, { image: selectedAvatarURL });
+
+    // Update header preview
+    if (avatarImg) avatarImg.src = selectedAvatarURL;
+
+    // Swap spinner → success animation
+    spinner.style.display = "none";
+    success.style.display = "flex";
+
+    setTimeout(() => {
+  // Animate modal out before fully hiding it
+  modal.classList.remove("show");
+  modal.classList.add("hide");
+
+  // After animation, fully hide modal
+  setTimeout(() => {
+    modal.classList.remove("hide");
+    modal.style.display = "none";
+    document.body.style.overflow = ''; // Restore scroll
+
+
+    // Clean up UI
+    document.getElementById("saveAvatarSection").style.display = "none";
+    success.style.display = "none";
+  }, 300); // matches fadeOutModal animation time
+}, 1200); // delay for checkmark to finish
+ // matches SVG animation ~1.0s
+
+  } catch (err) {
+    console.error("Failed to update avatar:", err);
+    alert("Could not update avatar.");
+    spinner.style.display = "none";
+  }
+});
+
+
+
+  async function selectAvatar(url) {
+  try {
+    const user = auth.currentUser;
+    if (!user) return alert("Not signed in");
+
+    const userRef = doc(db, "Users", user.uid); // ✅ Fix this line
+    await updateDoc(userRef, { image: url });   // ✅ Fix this line
+
+    avatarImg.src = url;
+    modal.classList.remove("show");
+  } catch (err) {
+    console.error("Failed to update avatar:", err);
+    alert("Could not update avatar.");
+  }
+}
+
+
+  auth.onAuthStateChanged(async user => {
+    if (!user) return;
+
+
+const userRef = doc(db, "Users", user.uid);
+const docSnap = await getDoc(userRef);
+const userData = docSnap.exists() ? docSnap.data() : null;
+
+    avatarImg.src = userData?.image || "https://img.freepik.com/premium-vector/silver-membership-icon-default-avatar-profile-icon-membership-icon-social-media-user-image-vector-illustration_561158-4215.jpg";
+  });
+
+
+  const closeBtn = document.getElementById("closeUserAvatarModalBtn");
+
+closeBtn.addEventListener("click", () => {
+  modal.classList.remove("show");
+  modal.classList.add("hide");
+document.body.style.overflow = ''; // Restore scroll
+
+  setTimeout(() => {
+    modal.classList.remove("hide");
+    modal.style.display = "none"; // completely hide after fade
+  }, 300); // match animation duration
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === modal) {
+    modal.classList.remove("show");
+    modal.classList.add("hide");
+    document.body.style.overflow = '';
+    
+    setTimeout(() => {
+      modal.classList.remove("hide");
+      modal.style.display = "none";
+    }, 300);
+  }
+});
+});
+
+
+
+
 
 // 💡 Place this at the top of your JS file
 function showToast(message, type = "success") {
@@ -643,7 +820,7 @@ const isQueued = d.status === "queued" && d.queueUntil?.toMillis?.() > nowMs;
       <div class="card-header">
         <span id="${statusId}" class="status-badge queued-waiting">🤖 AI Queued</span>
       </div>
-      <h3 class="plan-name">${d.plan}</h3>
+      <h3 class="plan-name" id="plan-name">${d.plan}</h3>
       <div class="investment-details">
         <div><strong>Capital:</strong> $${formatMoney(d.amount)}</div>
         <div><strong>Rate:</strong> ${d.percent}%</div>
@@ -674,25 +851,25 @@ card.innerHTML = `
     </span>
     ${d.status === "active" ? `<span id="${countdownId}" class="countdown-timer">⏳ ...</span>` : ""}
   </div>
-  <h3 class="plan-name">${d.plan}</h3>
-  <div class="investment-details">
-    <div><strong>Capital:</strong> $${formatMoney(d.amount)}</div>
-    <div><strong>Rate:</strong> ${d.percent}%</div>
-    <div><strong>Duration:</strong> ${d.duration}</div>
-    <div><strong>Returns:</strong> $${formatMoney(d.returns)}</div>
-    <div><strong>Start Date:</strong> ${new Date(start).toLocaleDateString()}</div>
+  <h3 class="plan-name" id="plan-name">${d.plan}</h3>
+  <div class="investment-details" id="invdet">
+    <div id="info"><strong id="str">Capital:</strong> $${formatMoney(d.amount)}</div>
+    <div id="info"><strong id="str">Rate:</strong> ${d.percent}%</div>
+    <div id="info"><strong id="str">Duration:</strong> ${d.duration}</div>
+    <div id="info"><strong id="str">Returns:</strong> $${formatMoney(d.returns)}</div>
+    <div id="info"><strong id="str">Start Date:</strong> ${new Date(start).toLocaleDateString()}</div>
   </div>
   ${
     d.status === "active"
       ? `
-  <div class="progress-bar-container" aria-label="Investment progress">
+  <div class="progress-bar-container" id="pgbar" aria-label="Investment progress">
     <div id="${progressId}" class="progress-bar-fill"></div>
   </div>
   <div id="${logId}" class="log-section" aria-live="polite">🧠 AI bot initializing trade...</div>
-    <div class="live-earnings-box">
-  <div class="live-label">💸 Live Earnings:</div>
-  <div class="earnings-box" style="position: relative; display: inline-block;">
-  <div id="earn-${cardId}" class="live-earn-amount">$0.00</div>
+    <div class="live-earnings-box" id="earnbox">
+  <div class="live-label" id="eb2">💸 Live Earnings:</div>
+  <div class="earnings-box" id="amo" style="position: relative; display: inline-block;">
+  <div id="earn-${cardId}" class="live-earn-amount" >$0.00</div>
   </div>
 </div>
   ` : ""}
@@ -1783,5 +1960,512 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  let currentCurrency = "USD";
+  let currentChartType = "line";
+  let chartInstance = null;
+  let cachedLabels = [];
+  let cachedUSDData = [];
+  let btcRate = 0;
+  let earningsTargetUSD = 5000;
+  let earningsTargetBTC = 0.1;
+
+  const earningsByMonth = {};
+  const plansByMonth = {};
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return console.warn("User not signed in");
+
+    
+
+    try {
+      const userId = user.uid;
+      const q = query(
+        collection(db, "Investments", userId, "records"),
+        where("status", "==", "completed")
+      );
+
+      const snap = await getDocs(q);
+      await evaluateBadges(userId, snap);
+      console.log("✅ Completed investments found:", snap.size);
+
+      snap.forEach(doc => {
+        const data = doc.data();
+        if (!data.earnedSoFar || !data.createdAt || !data.duration) return;
+
+        try {
+          const earned = parseFloat(data.earnedSoFar);
+          const start = data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+          const end = getInvestmentEndDate(start, data.duration);
+          const monthKey = end.toLocaleString("default", { month: "short", year: "numeric" });
+
+          earningsByMonth[monthKey] = (earningsByMonth[monthKey] || 0) + earned;
+          plansByMonth[monthKey] = plansByMonth[monthKey] || [];
+          plansByMonth[monthKey].push(data.plan || "Unknown");
+        } catch (e) {
+          console.error("❌ Error parsing record:", doc.id, e);
+        }
+      });
+
+      const now = new Date();
+      const cutoff = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+      const sortedKeys = Object.keys(earningsByMonth)
+        .filter(key => {
+          const [monthStr, yearStr] = key.split(" ");
+          const date = new Date(`${monthStr} 1, ${yearStr}`);
+          return date >= cutoff;
+        })
+        .sort((a, b) => new Date(a + " 1") - new Date(b + " 1"));
+
+      cachedLabels = sortedKeys;
+      cachedUSDData = sortedKeys.map(key => earningsByMonth[key]);
+
+      const monthlyAvg = cachedUSDData.reduce((a, b) => a + b, 0) / cachedUSDData.length;
+      earningsTargetUSD = +(monthlyAvg * 1.5).toFixed(2);
+      btcRate = btcRate || await fetchBTCPrice();
+      earningsTargetBTC = +(earningsTargetUSD / btcRate).toFixed(6);
+
+      if (cachedLabels.length && cachedUSDData.length) {
+        document.getElementById("noEarningsMsg").style.display = "none";
+        const total = cachedUSDData.reduce((sum, val) => sum + val, 0);
+        displayTotalEarnings(total);
+        createEarningsChart();
+      } else {
+        document.getElementById("noEarningsMsg").style.display = "block";
+        document.getElementById("totalEarningsDisplay").innerHTML = "";
+      }
+
+    } catch (err) {
+      console.error("🔥 Error loading investments:", err);
+    }
+  });
+
+  async function evaluateBadges(userId, completedSnap) {
+    const badgeRef = doc(db, "Users", userId);
+    const badgesToUpdate = {};
+
+    const totalEarned = completedSnap.docs.reduce((sum, doc) => {
+      const earned = parseFloat(doc.data().earnedSoFar || 0);
+      return sum + earned;
+    }, 0);
+
+    if (completedSnap.size >= 1) badgesToUpdate["badges.firstInvestment"] = true;
+    if (totalEarned >= 5000) badgesToUpdate["badges.earned5k"] = true;
+    if (totalEarned >= 10000) badgesToUpdate["badges.earned10k"] = true;
+    if (completedSnap.size >= 7) badgesToUpdate["badges.streak7"] = true;
+    if (totalEarned >= 50000) badgesToUpdate["badges.highRoller"] = true;
+
+    if (Object.keys(badgesToUpdate).length > 0) {
+      await updateDoc(badgeRef, badgesToUpdate);
+      console.log("Updated badges:", badgesToUpdate);
+    }
+  }
+
+  function getInvestmentEndDate(startDate, duration) {
+    const end = new Date(startDate);
+    const value = parseInt(duration);
+    const unit = duration.replace(/[0-9]/g, "").toLowerCase();
+    if (unit === "w") end.setDate(end.getDate() + value * 7);
+    else if (unit === "m") end.setMonth(end.getMonth() + value);
+    else if (unit === "y") end.setFullYear(end.getFullYear() + value);
+    else end.setDate(end.getDate() + 7);
+    return end;
+  }
+
+  async function fetchBTCPrice() {
+    try {
+      const res = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd");
+      const data = await res.json();
+      return data.bitcoin.usd;
+    } catch (err) {
+      console.error("Failed to fetch BTC price:", err);
+      return 60000;
+    }
+  }
+
+  async function displayTotalEarnings(totalUSD) {
+    const display = document.getElementById("totalEarningsDisplay");
+    if (!btcRate) btcRate = await fetchBTCPrice();
+    const totalBTC = totalUSD / btcRate;
+    display.innerHTML = `
+      Total Earned:
+      <span class="usd-amount">$${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+      <span class="btc-amount">(${totalBTC.toFixed(6)} BTC)</span>
+    `;
+  }
+
+  function summarizePlans(plansArray) {
+    const count = {};
+    plansArray.forEach(p => count[p] = (count[p] || 0) + 1);
+    return Object.entries(count).map(([name, num]) => `${num}× ${name}`).join(", ");
+  }
+
+  function generateBarColors(count) {
+    const palette = [
+      "#f87171", "#facc15", "#34d399", "#60a5fa", "#a78bfa", "#fb923c",
+      "#f472b6", "#4ade80", "#fcd34d", "#93c5fd", "#c084fc", "#f97316"
+    ];
+    return Array.from({ length: count }, (_, i) => palette[i % palette.length]);
+  }
+
+  function createEarningsChart() {
+    if (!btcRate) {
+      fetchBTCPrice().then(rate => {
+        btcRate = rate || 60000;
+        renderChart();
+      });
+    } else {
+      renderChart();
+    }
+  }
+
+  function showBadgeToast(badgeName, iconUrl) {
+    const toast = document.getElementById("badgeToast");
+    const toastText = document.getElementById("toastText");
+    const toastIcon = document.getElementById("toastIcon");
+
+    toastText.textContent = badgeName;
+    toastIcon.src = iconUrl;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4000);
+  }
+
+  function renderChart() {
+    if (chartInstance) chartInstance.destroy();
+
+    const ctx = document.getElementById("btcEarningsChart").getContext("2d");
+    const dataset = currentCurrency === "BTC"
+      ? cachedUSDData.map(val => +(val / btcRate).toFixed(6))
+      : cachedUSDData;
+
+    const annotationTarget = currentCurrency === "USD" ? earningsTargetUSD : earningsTargetBTC;
+
+    chartInstance = new Chart(ctx, {
+      type: currentChartType,
+      data: {
+        labels: cachedLabels,
+        datasets: [{
+          label: currentCurrency === "USD" ? "USD Earned" : "BTC Earned",
+          data: dataset,
+          borderColor: currentChartType === "bar"
+            ? generateBarColors(dataset.length)
+            : "#22c55e",
+          backgroundColor: currentChartType === "bar"
+            ? generateBarColors(dataset.length)
+            : "rgba(34, 197, 94, 0.2)",
+          fill: currentChartType === "line",
+          tension: 0.4,
+          pointRadius: currentChartType === "line" ? 4 : 0,
+          pointBackgroundColor: "#22c55e"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        animation: {
+          duration: 1000,
+          easing: "easeOutBounce"
+        },
+        scales: {
+          x: {
+            grid: { color: "#374151" },
+            ticks: { color: "#d1d5db" }
+          },
+          y: {
+            beginAtZero: true,
+            grid: { color: "#374151" },
+            ticks: { color: "#d1d5db" }
+          }
+        },
+        plugins: {
+          legend: { labels: { color: "#22c55e" } },
+          tooltip: {
+            callbacks: {
+              title: (items) => items[0].label,
+              label: (ctx) => {
+                const val = currentCurrency === "USD"
+                  ? `$${ctx.parsed.y.toFixed(2)}`
+                  : `${ctx.parsed.y.toFixed(6)} BTC`;
+                const plans = plansByMonth[ctx.label] || [];
+                return [val, `Plans: ${summarizePlans(plans)}`];
+              }
+            }
+          },
+          annotation: {
+            annotations: {
+              targetLine: {
+                type: 'line',
+                yMin: annotationTarget,
+                yMax: annotationTarget,
+                borderColor: 'red',
+                borderWidth: 2,
+                borderDash: [6, 6],
+                label: {
+                  display: true,
+                  content: currentCurrency === "USD"
+                    ? `$${earningsTargetUSD} Target`
+                    : `${earningsTargetBTC} BTC Target`,
+                  position: 'end',
+                  backgroundColor: 'rgba(255,0,0,0.7)',
+                  color: 'white'
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    loadAchievements();
+  }
+
+  async function loadAchievements() {
+  const docSnap = await getDoc(doc(db, "Users", auth.currentUser.uid));
+  const badgeData = docSnap.exists() ? docSnap.data().badges || {} : {};
+
+  document.querySelectorAll(".badge").forEach(badge => {
+    const key = badge.dataset.key;
+    badge.classList.toggle("earned", !!badgeData[key]);
+    badge.classList.toggle("locked", !badgeData[key]);
+  });
+
+  // 🧠 ADD THIS RIGHT HERE:
+  const completedInvestments = [];
+  let totalEarnedUSD = 0;
+  const snap = await getDocs(query(
+    collection(db, "Investments", auth.currentUser.uid, "records"),
+    where("status", "==", "completed")
+  ));
+  snap.forEach(doc => {
+    const data = doc.data();
+    if (data.status === "completed") {
+      completedInvestments.push(data);
+      totalEarnedUSD += parseFloat(data.earnedSoFar || "0");
+    }
+  });
+
+  const badges = document.querySelectorAll(".badge");
+  const earnedBadges = [];
+
+  badges.forEach((badge) => {
+    const key = badge.id;
+    const badgeElement = document.getElementById(key);
+
+    let isUnlocked = false;
+
+    if (key === "first-investment" && completedInvestments.length > 0) {
+      isUnlocked = true;
+    }
+    if (key === "earn-5k" && totalEarnedUSD >= 5000) {
+      isUnlocked = true;
+    }
+    if (key === "earn-10k" && totalEarnedUSD >= 10000) {
+      isUnlocked = true;
+    }
+    if (key === "login-streak" && completedInvestments.length > 0) {
+      isUnlocked = true;
+    }
+
+    if (isUnlocked) {
+      if (!earnedBadges.includes(key)) {
+        badgeElement.classList.add("unlocked");
+        earnedBadges.push(key);
+
+        // Show toast for new badge
+        const icon = badgeElement.querySelector("img")?.src || "";
+        const name = badgeElement.querySelector("span")?.textContent || "New Badge";
+        showBadgeToast(name, icon);
+      } else {
+        badgeElement.classList.add("unlocked");
+      }
+    }
+  });
+}
+
+  document.getElementById("toggleCurrencyBtn").addEventListener("click", () => {
+    currentCurrency = currentCurrency === "USD" ? "BTC" : "USD";
+    document.getElementById("toggleCurrencyBtn").textContent =
+      `Switch to ${currentCurrency === "USD" ? "BTC" : "USD"}`;
+    renderChart();
+  });
+
+  document.getElementById("toggleChartTypeBtn").addEventListener("click", () => {
+    currentChartType = currentChartType === "line" ? "bar" : "line";
+    document.getElementById("toggleChartTypeBtn").textContent =
+      `Switch to ${currentChartType === "line" ? "Bar" : "Line"} Chart`;
+    renderChart();
+  });
+
+  document.getElementById("downloadChartBtn").addEventListener("click", () => {
+    const link = document.createElement("a");
+    link.download = `bitfidelity_earnings_chart_${currentCurrency.toLowerCase()}.png`;
+    link.href = document.getElementById("btcEarningsChart").toDataURL("image/png");
+    link.click();
+  });
+
+  document.getElementById("setTargetBtn")?.addEventListener("click", () => {
+    const input = prompt(`Set your earnings target (${currentCurrency}):`, 
+      currentCurrency === "USD" ? earningsTargetUSD : earningsTargetBTC);
+    const value = parseFloat(input);
+    if (!isNaN(value) && value > 0) {
+      if (currentCurrency === "USD") earningsTargetUSD = value;
+      else earningsTargetBTC = value;
+      renderChart();
+    }
+  });
+});
+
+const toggleBtn = document.getElementById("leaderboardToggleBtn");
+const leaderboard = document.getElementById("leaderboardScroll");
+
+toggleBtn.addEventListener("click", () => {
+  leaderboard.classList.toggle("collapsed");
+  toggleBtn.classList.toggle("collapsed");
+
+  const arrow = toggleBtn.querySelector(".arrow-icon");
+  arrow.textContent = leaderboard.classList.contains("collapsed") ? "▼" : "▲";
+});
+
+window.addEventListener("scroll", () => {
+  const header = document.querySelector(".dashboard-header");
+  if (window.scrollY > 10) {
+    header.classList.add("scrolled");
+  } else {
+    header.classList.remove("scrolled");
+  }
+});
+
+
+
+
+document.getElementById("feedbackForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = document.getElementById("feedbackMessage").value.trim();
+  const name = document.getElementById("feedbackName").value.trim();
+  const toast = document.getElementById("feedbackToast");
+
+  if (!message) return;
+
+  try {
+    const feedbackRef = collection(db, "Feedback");
+    await addDoc(feedbackRef, {
+      message,
+      name,
+      timestamp: serverTimestamp()
+    });
+
+    document.getElementById("feedbackForm").reset();
+    toast.textContent = "✅ Thank you for your feedback!";
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4000);
+  } catch (err) {
+    console.error("Failed to send feedback:", err);
+    toast.textContent = "❌ Failed to send. Try again.";
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4000);
+  }
+});
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const chart = document.getElementById("btcEarningsChart");
+  const newInvestmentBtn = document.getElementById("newInvestmentBtn");
+  const dashboardTabs = document.querySelector(".dashboard-tabs");
+
+  function isElementInFullView(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.top >= 0 && rect.bottom <= window.innerHeight;
+  }
+
+  function isElementPartiallyInView(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.top < window.innerHeight && rect.bottom > 0;
+  }
+
+  function updateInvestmentButtonVisibility() {
+    const chartVisible = isElementPartiallyInView(chart);
+    const tabsFullyVisible = isElementInFullView(dashboardTabs);
+
+    if (chartVisible || !tabsFullyVisible) {
+      newInvestmentBtn.classList.add("hidden");
+    } else {
+      newInvestmentBtn.classList.remove("hidden");
+    }
+  }
+
+  window.addEventListener("scroll", updateInvestmentButtonVisibility);
+  window.addEventListener("resize", updateInvestmentButtonVisibility);
+  updateInvestmentButtonVisibility(); // Initial check
+});
+
+
+
+auth.onAuthStateChanged(async (user) => {
+
+  const newInvestmentBtn = document.getElementById("newInvestmentBtn");
+let hasInvestments = false;
+
+async function checkInvestmentExistence(userId) {
+  const q = query(collection(db, "Investments", userId, "records"));
+  const snap = await getDocs(q);
+  hasInvestments = !snap.empty;
+  updateInvestmentButtonVisibility(); // call once after load
+}
+
+  if (user) {
+    await checkInvestmentExistence(user.uid);
+    // ... continue with your other logic
+  }
+
+  function isElementInFullView(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top >= 0 && rect.bottom <= window.innerHeight;
+}
+
+function isElementPartiallyInView(el) {
+  const rect = el.getBoundingClientRect();
+  return rect.top < window.innerHeight && rect.bottom > 0;
+}
+
+function updateInvestmentButtonVisibility() {
+  const chart = document.getElementById("btcEarningsChart");
+  const investmentsPane = document.getElementById("investmentsPane");
+  const dashboardTabs = document.querySelector(".dashboard-tabs");
+
+  const isInvestmentsPaneVisible = isElementPartiallyInView(investmentsPane);
+  const isChartVisible = isElementPartiallyInView(chart);
+  const tabsFullyVisible = isElementInFullView(dashboardTabs);
+
+  const isActiveTab = investmentsPane?.classList.contains("active") || investmentsPane?.style.display !== "none";
+
+  if (
+    hasInvestments &&
+    isActiveTab &&
+    isInvestmentsPaneVisible &&
+    !isChartVisible &&
+    tabsFullyVisible
+  ) {
+    newInvestmentBtn.classList.remove("hidden");
+  } else {
+    newInvestmentBtn.classList.add("hidden");
+  }
+}
+window.addEventListener("scroll", updateInvestmentButtonVisibility);
+window.addEventListener("resize", updateInvestmentButtonVisibility);
 });
 

@@ -19,7 +19,13 @@
 
   <div id="toastContainer" class="toast-container"></div>
   <div id="loadingOverlay" class="hidden">Logging out...</div>
-
+<div class="live-rates-bar" id="liveRatesBar">
+  <div class="crypto-rate btc">BTC <span class="price" id="btcPrice">$0.00</span></div>
+  <div class="crypto-rate">USDT <span class="price" id="usdtPrice">$0.00</span></div>
+  <div class="crypto-rate">LTC <span class="price" id="ltcPrice">$0.00</span></div>
+  <div class="crypto-rate">ETH <span class="price" id="ethPrice">$0.00</span></div>
+  <div class="crypto-rate">BNB <span class="price" id="bnbPrice">$0.00</span></div>
+</div>
   <header class="dashboard-header">
   <div class="header-left-group">
     <div class="greeting" id="greetingText">Good day ☀️🌤️🌙</div>
@@ -55,21 +61,48 @@
 
 
 <!-- Avatar Selection Modal -->
-<div class="avatar-modal hidden" id="avatarModal">
-  <div class="avatar-modal-content">
-    <h3>Select Your Avatar</h3>
-    <div class="avatar-grid" id="avatarGrid"></div>
-    <button class="close-modal-btn" id="closeAvatarModal">Close</button>
-  </div>
-</div>
+
 
 
 
     <div class="profile-container">
-      <img src="https://img.freepik.com/premium-vector/silver-membership-icon-default-avatar-profile-icon-membership-icon-social-media-user-image-vector-illustration_561158-4215.jpg" class="avatar" id="userAvatar" />
-      <label id="editAvatarBtn" class="edit-icon">✏️</label>
+      <img src="https://img.freepik.com/premium-vector/silver-membership-icon-default-avatar-profile-icon-membership-icon-social-media-user-image-vector-illustration_561158-4215.jpg" 
+      class="avatar" id="userAvatar" />
+      <label id="openUserAvatarModalBtn" class="edit-icon">✏️</label>
       <input type="file" id="avatarUpload" class="hidden" />
     </div>
+
+<!-- Avatar Selection Modal -->
+<div id="userAvatarModal" class="user-avatar-modal">
+  <div class="user-avatar-content">
+    <span id="closeUserAvatarModalBtn" class="user-avatar-close">❌</span>
+    <h3>Select Your Avatar</h3>
+    <p class="user-avatar-note">
+    🔒 <strong>Why Use an Avatar?</strong><br>
+    At BitFidelity, we prioritize your <strong>privacy and security</strong>. Instead of requiring personal photos, we use unique anime-style avatars to help protect your <strong>identity and confidential information</strong>. This ensures a safe, anonymous, and professional experience while maintaining a friendly community feel.
+  </p>
+  <div id="saveAvatarSection" class="user-avatar-save" style="display: none;">
+  <button id="confirmAvatarBtn" class="save-avatar-btn">Save Avatar</button>
+  <div id="avatarSavingSpinner" class="avatar-spinner" style="display: none;">
+    <div class="spinner"></div>
+    <p>Updating your profile picture...</p>
+  </div>
+  <!-- Success animation -->
+<div id="avatarSaveSuccess" class="avatar-save-success" style="display:none;">
+  <!-- Animated green circle + check -->
+  <svg class="success-check" viewBox="0 0 52 52">
+    <circle class="success-check-circle" cx="26" cy="26" r="25" fill="none"/>
+    <path class="success-check-mark" fill="none" d="M14 27l7 7 17-17"/>
+  </svg>
+  <p>Profile picture updated!</p>
+</div>
+</div>
+
+    <div id="userAvatarGrid" class="user-avatar-grid"></div>
+
+  </div>
+</div>
+
     
     <div class="logout-icon-wrapper">
   <div id="logoutBtn" class="logout-icon" title="Logout">
@@ -86,24 +119,25 @@
   </div>
 </header>
 
-<div class="live-rates-bar">
-  <div class="crypto-rate btc">BTC <span class="price" id="btcPrice">$0.00</span></div>
-  <div class="crypto-rate">USDT <span class="price" id="usdtPrice">$0.00</span></div>
-  <div class="crypto-rate">LTC <span class="price" id="ltcPrice">$0.00</span></div>
-  <div class="crypto-rate">ETH <span class="price" id="ethPrice">$0.00</span></div>
-  <div class="crypto-rate">BNB <span class="price" id="bnbPrice">$0.00</span></div>
-</div>
+
 
   <!-- Leaderboard Section -->
-<div class="leaderboard-container">
-    <h2 class="leaderboard-header">🏆 Our Top Investors</h2>
+<div class="leaderboard-container" >
+  <div class="leaderboard-toggle-wrapper">
+  <button id="leaderboardToggleBtn" class="leaderboard-toggle-btn" aria-label="Toggle Leaderboard">
+    <span class="arrow-icon">▲</span>
+    <span class="toggle-text" id="leaderboardTitle">Our Top Investors</span>
+  </button>
+</div>
+
+
     <div class="leaderboard-scroll" aria-label="Top investors leaderboard" id="leaderboardScroll">
 
       <!-- Investor cards with verified badges -->
 <div class="investor-card top-investor" tabindex="0">
   <div class="investor-rank">#1</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://i.pinimg.com/736x/a3/8a/c8/a38ac820e79de63946e0f227df62bcc9.jpg" alt="Investor #15 photo" />
+    <img class="investor-photo" src="https://cdnb.artstation.com/p/assets/images/images/037/250/389/large/jaqen-art-self-genshin.jpg?1619888825" alt="Investor #15 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Emsa****</div>
@@ -123,7 +157,7 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#3</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://www.shutterstock.com/shutterstock/photos/2235047505/display_1500/stock-vector-young-girl-anime-style-character-vector-illustration-design-manga-anime-girl-hair-faces-cartoon-2235047505.jpg" alt="Investor #13 photo" />
+    <img class="investor-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=SatoshiAI" alt="Investor #13 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Oliv******</div>
@@ -153,7 +187,7 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#6</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://pics.craiyon.com/2023-09-20/1b7546de476d41ac91510c51bb295187.webp" alt="Investor #10 photo" />
+    <img class="investor-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=LunaCrypto" alt="Investor #10 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Jame***</div>
@@ -163,7 +197,8 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#7</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://media.istockphoto.com/id/1429141343/vector/knight-character.jpg?s=612x612&w=0&k=20&c=83LMVv-IePFzsyG5DfnsN6vVElcUvA1guxQAeGjTI9s=" alt="Investor #9 photo" />
+    <img class="investor-photo" 
+    src="https://api.dicebear.com/7.x/avataaars/svg?seed=MochiDrop" alt="Investor #9 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Isob********</div>
@@ -173,7 +208,7 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#8</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://media.craiyon.com/2025-04-25/gARLI1vkQ76Avq6N7IWERw.webp" alt="Investor #8 photo" />
+    <img class="investor-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=SenpaiHodl" alt="Investor #8 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Bente******</div>
@@ -203,7 +238,7 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#11</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://image.tensorartassets.com/posts/images/629433500520608395/aeedd59a-bcb4-4592-bd45-5a5db697a8bf.jpg" alt="Investor #5 photo" />
+    <img class="investor-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=CryptoTenshi" alt="Investor #5 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Amel***</div>
@@ -223,7 +258,7 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#13</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://i.pinimg.com/736x/93/ff/68/93ff6871a46488ad8b23a298ad352f80.jpg" alt="Investor #3 photo" />
+    <img class="investor-photo" src="https://api.dicebear.com/7.x/avataaars/svg?seed=NekoTrader" alt="Investor #3 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Char*****</div>
@@ -243,7 +278,8 @@
 <div class="investor-card" tabindex="0">
   <div class="investor-rank">#15</div>
   <div class="photo-wrapper">
-    <img class="investor-photo" src="https://images.stockcake.com/public/1/b/a/1bab086b-f202-4c34-9b4e-ceea6142f028_large/autumn-anime-portrait-stockcake.jpg" alt="Investor #1 photo" />
+    <img class="investor-photo" 
+    src="https://api.dicebear.com/7.x/avataaars/svg?seed=MidoriKaze" alt="Investor #1 photo" />
     <span class="verified-badge">✔</span>
   </div>
   <div class="investor-name">Alep****</div>
@@ -561,6 +597,102 @@
 
 
 
+<!-- Bitcoin Earnings Chart Section (Footer) -->
+<div class="user-earnings-section">
+  <div class="chart-controls">
+    <button id="toggleChartTypeBtn">Switch to Bar Chart</button>
+  <button id="toggleCurrencyBtn">Switch to BTC</button>
+  <button id="setTargetBtn">Set Target</button>
+  <button id="downloadChartBtn">Download Chart</button>
+</div>
+
+  <h3>Your Earnings Overview (USD)</h3>
+  <div id="totalEarningsDisplay">Total Earned: <span class="usd-amount">$0.00</span></div>
+  <canvas id="btcEarningsChart" height="300"></canvas>
+  <p id="noEarningsMsg" class="no-earnings-msg">No earnings data yet. Start investing to see results here!</p>
+
+</div>
+
+
+
+<div class="badge-list">
+  <div class="badge" data-key="firstInvestment" id="first-investment">
+    <img src="https://cdn-icons-png.flaticon.com/512/190/190411.png" alt="First Investment">
+    <span>First Investment</span>
+  </div>
+
+  <div class="badge" data-key="earned5k" id="earn-5k">
+    <img src="https://cdn-icons-png.flaticon.com/512/2583/2583337.png" alt="$5K Earned">
+    <span>Earned $5,000</span>
+  </div>
+
+  <div class="badge" data-key="earned10k" id="earn-10k">
+    <img src="https://cdn-icons-png.flaticon.com/512/2583/2583334.png" alt="$10K Earned">
+    <span>Earned $10,000</span>
+  </div>
+
+  <div class="badge" data-key="streak7" id="login-streak">
+    <img src="https://cdn-icons-png.flaticon.com/512/1000/1000981.png" alt="7 Day Streak">
+    <span>7-Trade Streak</span>
+  </div>
+
+  <!-- 🔥 New Badges Below -->
+
+  <div class="badge" data-key="first-week-complete" id="first-week-complete">
+    <img src="https://cdn-icons-png.flaticon.com/512/3771/3771585.png" alt="First Week Completed">
+    <span>Completed First Week</span>
+  </div>
+
+  <div class="badge" data-key="consistent-investor" id="consistent-investor">
+    <img src="https://cdn-icons-png.flaticon.com/512/4202/4202846.png" alt="Consistent Investor">
+    <span>Consistent Investor</span>
+  </div>
+
+  <div class="badge" data-key="high-roller" id="high-roller">
+    <img src="https://cdn-icons-png.flaticon.com/512/3064/3064734.png" alt="High Roller">
+    <span>High Roller ($50k+)</span>
+  </div>
+
+  <div class="badge" data-key="early-bird" id="early-bird">
+    <img src="https://cdn-icons-png.flaticon.com/512/3208/3208725.png" alt="Early Bird">
+    <span>Early Bird Investor</span>
+  </div>
+</div>
+
+
+<div id="badgeToast" class="badge-toast hidden">
+  <img id="toastIcon" src="" alt="Badge Icon">
+  <div>
+    <strong>New Badge Unlocked!</strong>
+    <p id="toastText">You earned a new badge</p>
+  </div>
+</div>
+
+<div class="feedback-section">
+  <h3>💬 We Value Your Feedback</h3>
+  <p>Tell us what you love, what to improve, or suggest a new feature!</p>
+  <form id="feedbackForm">
+    <textarea id="feedbackMessage" placeholder="Write your message..." required></textarea>
+    <input type="text" id="feedbackName" placeholder="Your name (optional)">
+    <button type="submit">Send Feedback</button>
+  </form>
+  <div id="feedbackToast" class="hidden">✅ Thank you for your feedback!</div>
+</div>
+
+<section class="footer-section newsletter-section">
+  <h3>📩 Subscribe for Updates</h3>
+  <p>Stay updated on new investment plans and crypto news.</p>
+  <form id="newsletterForm">
+    <input type="email" placeholder="Enter your email" required />
+    <button type="submit">Subscribe</button>
+  </form>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.2/dist/index.min.js"></script>
 
   <script type="module" src="dashboard.js"></script>
@@ -568,6 +700,15 @@
   <script type="module" src="chatroom.js"></script>
   <script type="module" src="investments.js"></script>
 </body>
+<footer class="legal-footer">
+  <div class="footer-links">
+    <a href="terms.html">Terms & Conditions</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="about.html">About BitFidelity</a>
+    <a href="mailto:support@bitfidelity.com">Contact Support</a>
+  </div>
+  <div class="footer-credit">© 2025 BitFidelity. All rights reserved.</div>
+</footer>
 </html>
 
 
